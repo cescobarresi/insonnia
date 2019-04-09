@@ -1,0 +1,84 @@
+==========
+ Overview
+==========
+
+Insonnia is a software to wakeup and/or shutdown a list of machines by means of Wake On Lan.
+
+Given a list of machine by CSV file, Insonnia will generate and send a Magic Packet to every machine or call shutdown.exe 
+depending on the requested action.
+It has been used on Windows 7 and Windows Server 2008.
+
+=======
+ Build
+=======
+
+To build just issue the right Cargo command. On a linux machine: ::
+
+    // Build for linux
+    $ cargo build --release
+
+    // Build for Windows
+    $ cargo build --target=x86_64-pc-windows-gnu --release
+
+=======
+Configuration
+======
+For the CSV file format refere to --help command. Insonnia ignores any
+extra columns, but it will fail badly if a column is missing.
+
+It will output to stdout some information when is run, and can log information
+when a --log parameter is set. If the file exists it will append on every new run.
+
+=======
+ Usage
+=======
+
+::
+
+    Insonnia: Wake up or shutdown machines.
+    Usage: 
+         target/debug/insonnia shut CSVFILE [options]
+         target/debug/insonnia wol CSVFILE [options]
+
+    Commands:
+        shut    Shutdown windows machines, uses 'name' column for shutdown.exe
+        wol     Wake up machines, uses 'hwaddress' column for wake-on-lan
+
+    Arguments:
+
+        CSVFILE  path to csv file containing list machines.
+                 First column: MAC address
+                 Second column: a resolvable name,
+                 Third column: one of [ws,w,s]. 
+                        ws: wake up and shutdown, 
+                        w: only wake up, 
+                        s: only shutdown.
+                 Other columns are ignored.
+
+                 Example csv:
+
+                 hwaddress,name,ops,notes
+                 80:c1:6e:ea:72:8e,My-Machine,ws,this colums is ignored
+                 50:c1:fb:25:12:83,Other_Machine,w,this colums is ignored 
+
+
+    Options:
+        -b, --bind IP:PORT  local bind address. [Default: 0.0.0.0:0]
+        -p, --pause SECONDS random pause from 0 to SECONDS. [Default: 10]
+            --comment TXT   shutdown comment. [Default: 'insonnia automatic
+                            shutdown']
+            --log FILE      path to log file.[Default: none]
+        -n, --dry-run       perform trial run without actually doing anything.
+        -f, --force         ignore the column 'ops' and run the action, either wol
+                            or shut, on all machines.
+        -h, --help          print this help menu
+
+----
+
+|copyright| 2017, Francesco Barresi
+
+For license information, please refer to the LICENSE file.
+
+
+
+.. |copyright|   unicode:: U+000A9 .. COPYRIGHT SIGN
